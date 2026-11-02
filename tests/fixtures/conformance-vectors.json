@@ -1,0 +1,92 @@
+{
+  "algorithm": "sha256-canonical-json-v1",
+  "vectors": [
+    {
+      "name": "simple",
+      "tool": "issue_refund",
+      "arguments": {
+        "paymentId": "pay_123",
+        "amount": 40
+      },
+      "canonical": "{\"arguments\":{\"amount\":40,\"paymentId\":\"pay_123\"},\"tool\":\"issue_refund\"}",
+      "payloadHash": "d8df51bc23a9c1e8a97166db7135b0c1f74386c95fea74e012dfd6ab8e78cb60"
+    },
+    {
+      "name": "nested and ordered",
+      "tool": "catalogue.read",
+      "arguments": {
+        "z": [
+          3,
+          1,
+          2
+        ],
+        "a": {
+          "y": true,
+          "b": null,
+          "c": "x"
+        },
+        "m": []
+      },
+      "canonical": "{\"arguments\":{\"a\":{\"b\":null,\"c\":\"x\",\"y\":true},\"m\":[],\"z\":[3,1,2]},\"tool\":\"catalogue.read\"}",
+      "payloadHash": "9713a5e50ac778ffff2c2b611ffc2bf61650678ba7c2adb8d5d321bc4ecb88e3"
+    },
+    {
+      "name": "unicode",
+      "tool": "note.write",
+      "arguments": {
+        "text": "Åsa — naïve 日本 😀",
+        "é": 1
+      },
+      "canonical": "{\"arguments\":{\"text\":\"Åsa — naïve 日本 😀\",\"é\":1},\"tool\":\"note.write\"}",
+      "payloadHash": "52db083b8dfbcef87cc1c2f38376d293b9f5921d5588d43ba9e67947112b558a"
+    },
+    {
+      "name": "utf16 key order",
+      "tool": "k",
+      "arguments": {
+        "｡": 1,
+        "😀": 2,
+        "": 3,
+        "a": 4,
+        "B": 5
+      },
+      "canonical": "{\"arguments\":{\"B\":5,\"a\":4,\"😀\":2,\"\":3,\"｡\":1},\"tool\":\"k\"}",
+      "payloadHash": "9af3beb7d9ae5a150e853acb6c1492df5263c88230d6deaa79d39b6935dcf4d6"
+    },
+    {
+      "name": "numbers",
+      "tool": "n",
+      "arguments": {
+        "int": 7,
+        "neg": -12,
+        "float": 0.1,
+        "whole": 1,
+        "big": 1e+21,
+        "almostBig": 123456789012345680000,
+        "tiny": 1e-7,
+        "small": 0.000001,
+        "exp": 1.5e+300,
+        "negZero": 0,
+        "maxSafe": 9007199254740991
+      },
+      "canonical": "{\"arguments\":{\"almostBig\":123456789012345680000,\"big\":1e+21,\"exp\":1.5e+300,\"float\":0.1,\"int\":7,\"maxSafe\":9007199254740991,\"neg\":-12,\"negZero\":0,\"small\":0.000001,\"tiny\":1e-7,\"whole\":1},\"tool\":\"n\"}",
+      "payloadHash": "d7b66a56e3517a4adb2c4b5ef5bea8e17b900fa288b15e403bcfde39ac96a8f5"
+    },
+    {
+      "name": "escapes",
+      "tool": "e",
+      "arguments": {
+        "s": "q\"b\\n\n\t\r\b\f\u0001\u001f /"
+      },
+      "canonical": "{\"arguments\":{\"s\":\"q\\\"b\\\\n\\n\\t\\r\\b\\f\\u0001\\u001f /\"},\"tool\":\"e\"}",
+      "payloadHash": "816dda514d105c606c96d88ce89f14012a29c616028db87fd6392a3047b815c3"
+    },
+    {
+      "name": "empty",
+      "tool": "noop",
+      "arguments": {},
+      "canonical": "{\"arguments\":{},\"tool\":\"noop\"}",
+      "payloadHash": "e18dd9f1dfae4a3fb65e5cdea31afb79713c532cc4bd9f2845b862fddee44973"
+    }
+  ]
+}

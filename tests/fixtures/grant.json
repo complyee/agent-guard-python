@@ -1,0 +1,28 @@
+{
+  "note": "Minted by Agent Control Room's own grant signing code; regenerated from the ACR source, do not edit by hand",
+  "workspaceUrl": "https://acme.agent-cr.com",
+  "agent": "finance-assistant",
+  "action": "refund.issue",
+  "tool": "issue_refund",
+  "arguments": {
+    "paymentId": "pay_123",
+    "amount": 40
+  },
+  "payloadHash": "d8df51bc23a9c1e8a97166db7135b0c1f74386c95fea74e012dfd6ab8e78cb60",
+  "decisionId": "11111111-1111-4111-8111-111111111111",
+  "issuedAt": "2026-11-01T12:00:00.000Z",
+  "expiresAt": "2026-11-01T12:05:00.000Z",
+  "grantJwt": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6IjZjOWRlMDVhYzI1YmQ3YmUifQ.eyJpc3MiOiJodHRwczovL2FnZW50LWNyLmNvbSIsInN1YiI6ImZpbmFuY2UtYXNzaXN0YW50IiwiYXVkIjoiaHR0cHM6Ly9hY21lLmFnZW50LWNyLmNvbSIsImp0aSI6IjExMTExMTExLTExMTEtNDExMS04MTExLTExMTExMTExMTExMSIsImlhdCI6MTc5MzUzNDQwMCwibmJmIjoxNzkzNTM0NDAwLCJleHAiOjE3OTM1MzQ3MDAsImFjciI6eyJ2ZXIiOiJhY3ItZ3JhbnQtand0LXYxIiwid29ya3NwYWNlSWQiOiJ0ZW5hbnQtYSIsImRlY2lzaW9uSWQiOiIxMTExMTExMS0xMTExLTQxMTEtODExMS0xMTExMTExMTExMTEiLCJhY3Rpb24iOiJyZWZ1bmQuaXNzdWUiLCJwYXlsb2FkSGFzaCI6ImQ4ZGY1MWJjMjNhOWMxZThhOTcxNjZkYjcxMzViMGMxZjc0Mzg2Yzk1ZmVhNzRlMDEyZGZkNmFiOGU3OGNiNjAiLCJyZXNvdXJjZVJlZiI6bnVsbCwicG9saWN5VmVyc2lvbiI6InYxIiwicnVsZUlkIjoici0xIiwibGluZWFnZSI6eyJwYXJlbnREZWNpc2lvbklkIjpudWxsLCJyb290RGVjaXNpb25JZCI6IjExMTExMTExLTExMTEtNDExMS04MTExLTExMTExMTExMTExMSIsImRlcHRoIjowfX19.eS1V5R7h931Z62n2HbHiMwW23GOTDk_Q4_XAu28r0-Kba0nYAGz7nYeYSUv0c3_US3EcjeUX0-gtj8yoMInTDg",
+  "jwks": {
+    "keys": [
+      {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "67yrATKVQlaQF9l2Zvm_Cofuhb6PuANUCnl7F2SrBdc",
+        "kid": "6c9de05ac25bd7be",
+        "use": "sig",
+        "alg": "EdDSA"
+      }
+    ]
+  }
+}

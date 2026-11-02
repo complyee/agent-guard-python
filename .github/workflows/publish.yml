@@ -1,0 +1,43 @@
+name: Publish to PyPI
+
+# Runs when a GitHub release is published (for example tag v0.1.0).
+# Uses PyPI Trusted Publishing: on PyPI, add a (pending) trusted publisher for
+# project "complyee-agent-guard" with owner "complyee", repository
+# "agent-guard-python", workflow "publish.yml" and environment "pypi".
+# No API token is stored in this repository.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]" build
+      - run: pytest
+      - run: python -m build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
