@@ -4,14 +4,28 @@ build-backend = "hatchling.build"
 
 [project]
 name = "complyee-agent-guard"
-version = "0.1.0"
+version = "0.1.1"
 description = "Run agent tools only on a verified Agent Control Room grant (LangGraph, CrewAI, LangChain and plain Python)."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 authors = [{ name = "Complyee AB" }]
 requires-python = ">=3.9"
-keywords = ["ai-agents", "langgraph", "crewai", "langchain", "policy", "authorization", "jwt", "agent-control-room", "complyee"]
+keywords = [
+  "ai-agents",
+  "ai-security",
+  "agent-governance",
+  "guardrails",
+  "policy-enforcement",
+  "langgraph",
+  "crewai",
+  "langchain",
+  "tool-guard",
+  "authorization",
+  "jwt",
+  "agent-control-room",
+  "complyee"
+]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
