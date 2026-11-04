@@ -1,13 +1,14 @@
 # complyee-agent-guard
 
 A customer-run companion that puts an Agent Control Room grant check in front of
-any Python agent tool — LangGraph, CrewAI, LangChain or plain functions. It does
+any Python agent tool — LangGraph, CrewAI, LlamaIndex, LangChain or plain functions. It does
 the repeatable work (fingerprinting, asking, waiting for a person, claiming,
 verifying the grant token, reporting the outcome); you supply the action name and
 the context facts your rules need.
 
-Status: 0.2 (beta). Python 3.9 or later; depends only on `httpx` and `cryptography`.
-The optional CrewAI adapter needs `crewai` 1.0 or later (Python 3.10 or later).
+Status: 0.3 (beta). Python 3.9 or later; depends only on `httpx` and `cryptography`.
+The optional CrewAI adapter needs `crewai` 1.0 or later and the optional LlamaIndex
+adapter needs `llama-index-core` 0.14.22 or later (both Python 3.10 or later).
 
 ```bash
 pip install complyee-agent-guard
@@ -104,6 +105,69 @@ is opened. Results of a guarded tool are never cached by CrewAI, so every call i
 decided. Pass `raise_guard_errors=True` only when you call the tool directly
 outside a crew and want the exceptions below instead.
 
+## LlamaIndex
+
+```bash
+pip install "complyee-agent-guard[llama-index]"
+```
+
+Wrap any LlamaIndex tool — a `QueryEngineTool` or `RetrieverTool` over your own
+documents, a `FunctionTool` or a custom `BaseTool` — and give the wrapped tool to
+your agent. The same wrapper governs reading knowledge and taking actions:
+
+```python
+from llama_index.core.agent.workflow import FunctionAgent
+from llama_index.core.tools import FunctionTool, QueryEngineTool
+from complyee_agent_guard.llama_index import GuardedLlamaTool, current_grant
+
+finance_docs = GuardedLlamaTool(
+    tool=QueryEngineTool.from_defaults(
+        query_engine=finance_index.as_query_engine(),
+        name="finance_docs",
+        description="Answer questions from the finance knowledge base.",
+    ),
+    guard=guard,                                 # from create_guard(...) above
+    action="knowledge.query",
+    resource_ref=lambda a: "kb:finance",
+    context=lambda a: {"classification": "confidential"},
+)
+
+def issue_refund(payment_id: str, amount: float) -> str:
+    """Refund a payment."""
+    grant = current_grant()  # the verified grant for exactly these arguments
+    payments.refund(payment_id, amount, idempotency_key=grant.decision_id)
+    return "Refund issued."
+
+refund = GuardedLlamaTool(
+    tool=FunctionTool.from_defaults(fn=issue_refund),
+    guard=guard,
+    action="refund.issue",
+    context=lambda a: {"amount": a["amount"]},
+)
+
+agent = FunctionAgent(tools=[finance_docs, refund], llm=llm)
+```
+
+The agent sees the wrapped tool's own name, description and argument schema.
+`GuardedLlamaTool` takes the same options as the decorator (`action`, `name`,
+`context`, `resource_ref`, `action_description`, `parent_decision_id`,
+`approvals`). For a knowledge tool the question, the retrieved documents and the
+answer stay in your process; Agent Control Room sees only a fingerprint of the
+question and the facts you declare.
+
+When the step does not run, the tool returns a `ToolOutput` with `is_error=True`
+instead of raising, so the agent reads why and carries on. Its content explains
+the outcome in plain words and never contains the arguments; `raw_output` carries
+the same stable codes as the CrewAI adapter (`code`, `retryable`, `status`,
+`decisionId`, `approvalId`) and `.exception` holds the guard error. If the
+wrapped tool itself fails, the agent gets an error `ToolOutput` and Agent Control
+Room records a downstream error — never a second request.
+
+If a person has not approved yet and the agent later calls the tool again with
+exactly the same input, the same approval request continues. Tools that take the
+workflow `Context` cannot be wrapped. Pass `raise_guard_errors=True` only when
+you call the tool directly outside an agent and want the exceptions below instead.
+
 ## When a person must approve
 
 - `"poll"` (default): waits up to `poll_timeout_s`, then claims the grant with the
@@ -138,8 +202,9 @@ only the hash is sent. A failed outcome report never changes the tool result.
 ## Tests
 
 ```bash
-pip install -e ".[dev]" && pytest            # CrewAI tests are skipped
-pip install -e ".[dev,crewai]" && pytest     # includes the CrewAI adapter
+pip install -e ".[dev]" && pytest                    # adapter tests are skipped
+pip install -e ".[dev,crewai]" && pytest             # includes the CrewAI adapter
+pip install -e ".[dev,llama-index]" && pytest        # includes the LlamaIndex adapter
 ```
 
 `tests/fixtures/grant.json` and `tests/fixtures/conformance-vectors.json` are

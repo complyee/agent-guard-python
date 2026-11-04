@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "complyee-agent-guard"
-version = "0.2.0"
-description = "Run agent tools only on a verified Agent Control Room grant (LangGraph, CrewAI, LangChain and plain Python)."
+version = "0.3.0"
+description = "Run agent tools only on a verified Agent Control Room grant (LangGraph, CrewAI, LlamaIndex, LangChain and plain Python)."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -19,6 +19,9 @@ keywords = [
   "policy-enforcement",
   "langgraph",
   "crewai",
+  "llama-index",
+  "llamaindex",
+  "rag",
   "langchain",
   "tool-guard",
   "authorization",
@@ -45,6 +48,7 @@ Changelog = "https://github.com/complyee/agent-guard-python/blob/main/CHANGELOG.
 
 [project.optional-dependencies]
 crewai = ["crewai>=1.0"]
+llama-index = ["llama-index-core>=0.14.22"]
 dev = ["pytest>=8", "pytest-asyncio>=0.23", "respx>=0.21"]
 
 [tool.hatch.build.targets.sdist]

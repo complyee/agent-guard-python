@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — LlamaIndex adapter
+
+- `complyee_agent_guard.llama_index.GuardedLlamaTool` wraps any LlamaIndex tool — `QueryEngineTool`, `RetrieverTool`, `FunctionTool` or a custom `BaseTool` — so it runs only on a verified grant; install with `pip install "complyee-agent-guard[llama-index]"` (LlamaIndex core 0.14.22 or later).
+- Knowledge lookups are governed like actions: the query, the retrieved documents and the answer stay in your process; Agent Control Room sees only the fingerprint and the facts you declare (for example `resource_ref=lambda a: "kb:finance"`).
+- A step that does not run returns a `ToolOutput` with `is_error=True`, a plain explanation for the model and a stable code in `raw_output` (`acr_refused`, `acr_approval_pending`, `acr_grant_invalid`, `acr_unavailable`) instead of raising, so the agent carries on and no LlamaIndex helper retries it as a new request.
+- If the wrapped tool fails, the agent gets an error `ToolOutput` and Agent Control Room records a downstream error.
+- An identical call after a hold continues the same approval request; `current_grant()` gives the wrapped tool the verified grant.
+
 ## 0.2.0 — CrewAI adapter
 
 - `complyee_agent_guard.crewai.GuardedCrewAITool` wraps any CrewAI tool (including `@tool` functions) so it runs only on a verified grant; install with `pip install "complyee-agent-guard[crewai]"`.
