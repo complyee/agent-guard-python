@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "complyee-agent-guard"
-version = "0.1.1"
+version = "0.2.0"
 description = "Run agent tools only on a verified Agent Control Room grant (LangGraph, CrewAI, LangChain and plain Python)."
 readme = "README.md"
 license = "Apache-2.0"
@@ -44,6 +44,7 @@ Issues = "https://github.com/complyee/agent-guard-python/issues"
 Changelog = "https://github.com/complyee/agent-guard-python/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
+crewai = ["crewai>=1.0"]
 dev = ["pytest>=8", "pytest-asyncio>=0.23", "respx>=0.21"]
 
 [tool.hatch.build.targets.sdist]

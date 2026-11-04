@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 — CrewAI adapter
+
+- `complyee_agent_guard.crewai.GuardedCrewAITool` wraps any CrewAI tool (including `@tool` functions) so it runs only on a verified grant; install with `pip install "complyee-agent-guard[crewai]"`.
+- A step that does not run returns a CrewAI `ToolFailure` with a stable code (`acr_refused`, `acr_approval_pending`, `acr_grant_invalid`, `acr_unavailable`) instead of raising, so CrewAI does not retry it as a new request; CrewAI's `tool_failure_policy` decides whether the crew continues.
+- An identical call after a hold continues the same approval request; guarded results are never cached.
+- `current_grant()` gives the wrapped tool the verified grant (use `decision_id` as the idempotency key).
+
+## 0.1.1
+
+- Registry keywords; no code changes.
+
 ## 0.1.0 — first public release
 
 - `create_guard` and the `@guard.tool(...)` decorator for plain and `async def` tools (LangGraph, CrewAI, LangChain, plain Python).
