@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "complyee-agent-guard"
-version = "0.3.0"
+version = "0.3.1"
 description = "Run agent tools only on a verified Agent Control Room grant (LangGraph, CrewAI, LlamaIndex, LangChain and plain Python)."
 readme = "README.md"
 license = "Apache-2.0"

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 — Retry-safe idempotency guidance
+
+- Documentation fix: examples no longer pass `decision_id` as the downstream idempotency key. A retry after a timeout is a new decision with a new `decision_id`, so that pattern could execute the work twice.
+- Examples now pass a stable business reference (for example `refund_request_id`) as the idempotency key and keep `decision_id` as audit metadata; the `VerifiedGrant` docstring says the same.
+- New README section "Retries and duplicate execution". No behaviour change.
+
 ## 0.3.0 — LlamaIndex adapter
 
 - `complyee_agent_guard.llama_index.GuardedLlamaTool` wraps any LlamaIndex tool — `QueryEngineTool`, `RetrieverTool`, `FunctionTool` or a custom `BaseTool` — so it runs only on a verified grant; install with `pip install "complyee-agent-guard[llama-index]"` (LlamaIndex core 0.14.22 or later).

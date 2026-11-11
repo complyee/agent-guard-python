@@ -33,9 +33,14 @@ guard = create_guard(
 )
 
 @guard.tool(action="refund.issue", context=lambda a: {"amount": a["amount"]})
-async def issue_refund(payment_id: str, amount: float, acr_grant: VerifiedGrant = None):
-    # Runs only after a verified grant for exactly these arguments.
-    return await payments.refund(payment_id, amount, idempotency_key=acr_grant.decision_id)
+async def issue_refund(refund_request_id: str, payment_id: str, amount: float,
+                       acr_grant: VerifiedGrant = None):
+    # Runs only after a verified grant for exactly these arguments. The idempotency
+    # key is your stable business reference, never decision_id: a retry is a new
+    # decision with a new id. decision_id is kept as the audit reference.
+    return await payments.refund(payment_id, amount,
+                                 idempotency_key=refund_request_id,
+                                 metadata={"acr_decision_id": acr_grant.decision_id})
 ```
 
 A plain `def` tool works the same way, synchronously. Add a parameter named
@@ -61,10 +66,12 @@ from crewai.tools import tool
 from complyee_agent_guard.crewai import GuardedCrewAITool, current_grant
 
 @tool("issue_refund")
-def issue_refund(payment_id: str, amount: float) -> str:
+def issue_refund(refund_request_id: str, payment_id: str, amount: float) -> str:
     """Refund a payment."""
     grant = current_grant()  # the verified grant for exactly these arguments
-    payments.refund(payment_id, amount, idempotency_key=grant.decision_id)
+    # Business reference as the idempotency key; decision_id only as audit metadata.
+    payments.refund(payment_id, amount, idempotency_key=refund_request_id,
+                    metadata={"acr_decision_id": grant.decision_id})
     return "Refund issued."
 
 refund = GuardedCrewAITool(
@@ -132,10 +139,12 @@ finance_docs = GuardedLlamaTool(
     context=lambda a: {"classification": "confidential"},
 )
 
-def issue_refund(payment_id: str, amount: float) -> str:
+def issue_refund(refund_request_id: str, payment_id: str, amount: float) -> str:
     """Refund a payment."""
     grant = current_grant()  # the verified grant for exactly these arguments
-    payments.refund(payment_id, amount, idempotency_key=grant.decision_id)
+    # Business reference as the idempotency key; decision_id only as audit metadata.
+    payments.refund(payment_id, amount, idempotency_key=refund_request_id,
+                    metadata={"acr_decision_id": grant.decision_id})
     return "Refund issued."
 
 refund = GuardedLlamaTool(
@@ -177,12 +186,27 @@ you call the tool directly outside an agent and want the exceptions below instea
 
 ```python
 try:
-    result = await issue_refund("pay_1", amount=40)
+    result = await issue_refund("rr_1", "pay_1", amount=40)
 except ApprovalPending as held:
     store.save(held.to_checkpoint())                 # JSON-safe; arguments stay in your store
 ...
-result = await issue_refund.resume(store.load())    # same request, same idempotency key
+result = await issue_refund.resume(store.load())    # same request, same approval
 ```
+
+## Retries and duplicate execution
+
+A grant authorises one decision; it is not a lock on the work. If a call times
+out and the agent or client retries, the guard asks again and Agent Control Room
+returns a **new decision with a new `decision_id`**. Using `decision_id` as the
+downstream idempotency key would therefore let the retry execute twice.
+
+- Give the downstream system a **stable business reference** as its idempotency
+  key (a refund request id, transfer id or order id that stays the same across
+  retries), and let that system refuse duplicates.
+- Keep `decision_id` as the **audit reference** (metadata on the downstream
+  record) so the action can be traced back to its decision.
+- Prefer a business reference supplied by your own system over one the model
+  invents; a model can produce a fresh id on every attempt.
 
 ## Fail closed
 
