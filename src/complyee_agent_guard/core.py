@@ -130,8 +130,10 @@ class JwksCache:
 
 @dataclass(frozen=True)
 class VerifiedGrant:
-    """Handed to the tool (parameter acr_grant) once the grant is verified. Pass
-    decision_id downstream as an idempotency key so a retry never does the work twice."""
+    """Handed to the tool (parameter acr_grant) once the grant is verified. A retry
+    after a timeout is a new decision with a new decision_id, so never use decision_id
+    as the downstream idempotency key: pass a stable business reference (e.g. a refund
+    request id) instead and keep decision_id as the audit reference."""
 
     decision_id: str
     payload_hash: str
